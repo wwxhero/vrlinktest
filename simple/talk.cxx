@@ -22,6 +22,10 @@
 
 #include <iostream>
 
+#include "adaptation.h"
+
+//end of adaptation layer
+
 void DtRtiShutdownHandler(const char * label, void* finished)
 {
    //This callback may occur multiple times, since it gets called
@@ -131,20 +135,36 @@ int main( int argc, char* argv[] )
       exConn.sendStamped(fire);
 
       // Main loop
-      DtTime dt = 0.05;
-      DtTime simTime = 0;
+      DtTime dt = 1.0/60.0; //60 hz
+      DtTime simTime = 0; //in seconds
       clock->init();
-      while (forever && simTime <= 10.0)
+
+      ExternalDriverState stateSim;
+      memset(&stateSim, 0, sizeof(ExternalDriverState));
+      ExternalDriverStateTran stateTran;
+      memset(&stateTran, 0, sizeof(ExternalDriverStateTran));
+
+
+      while (forever && simTime <= 600.0)
       {
          // Tell VR-Link the current value of simulation time.
          clock->setSimTime(simTime);
-
          // Process any incoming messages.
          exConn.drainInput();
 
+         mockDyna(simTime, stateSim);
+         Logout(simTime, stateSim);
+         Transform(stateSim, stateTran);
+         Logout(simTime, stateTran);
+
          // Set the current position information.
-         topoView.setLocation(position);
-         topoView.setVelocity(velocity);
+         topoView.setVelocity(stateTran.vel);
+         topoView.setAcceleration(stateTran.acc);
+         topoView.setOrientation(stateTran.ori);
+         topoView.setRotationalVelocity(stateTran.rot);
+         topoView.setLocation(stateTran.loc);
+
+
 
          // Call tick, which insures that any data that needs to be
          // updated is sent.

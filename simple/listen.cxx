@@ -23,6 +23,7 @@
 #include <vl/environmentProcessRepository.h>
 #include <vl/reflectedEnvironmentProcess.h>
 #include <vl/reflectedEnvironmentProcessList.h>
+#include "adaptation.h"
 
 int keybrdTick(void);
 
@@ -138,15 +139,18 @@ int main(int argc, char** argv)
 #ifdef DtHLA
       exConn.addRtiErrorCb(&DtRtiShutdownHandler, &forever);
 #endif
+      DtTime dt = 1.0/60.0; //60 hz
+      DtTime simTime = 0; //in seconds
 
-      while (forever)
+      while (forever && simTime <= 600.0)
       {
          // Check if user hit 'q' to quit.
          if (keybrdTick() == -1)
             break;
 
+         //simTime = clock->elapsedRealTime();
          // Tell VR-Link the current value of simulation time.
-         clock->setSimTime(clock->elapsedRealTime());
+         clock->setSimTime(simTime);
 
          // Process any incoming messages.
          exConn.drainInput();
@@ -165,16 +169,28 @@ int main(int argc, char** argv)
             double refLongitude = DtDeg2Rad(-121.326577);
             DtTopoView topoView(esr, refLatitude, refLongitude);
 
+            ExternalDriverStateTran stateTran;
+
+            stateTran.vel = topoView.velocity();
+            stateTran.acc = topoView.acceleration();
+            stateTran.ori = topoView.orientation();
+            stateTran.rot = topoView.rotationalVelocity();
+            stateTran.loc = topoView.location();
+            Logout(simTime, stateTran);
+
+            ExternalDriverState stateSim;
+            Transform(stateTran, stateSim);
+            Logout(simTime, stateSim);
             // Print the position.
             // Since it returns a DtString, we need to force it to const char*
             // with a cast.
-            std::cout << "Position of first entity: "
-               << topoView.location().string() << std::endl;
+            //std::cout << "Position of first entity: "
+            //   << topoView.location().string() << " time: " << simTime << std::endl;
 
          }
-
+         simTime += dt;
          // Sleep till next iteration.
-         DtSleep(0.1);
+         DtSleep(simTime - clock->elapsedRealTime());
       }
    }
    DtCATCH_AND_WARN(std::cout);
