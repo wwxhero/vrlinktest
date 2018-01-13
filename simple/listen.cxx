@@ -163,7 +163,7 @@ int main(int argc, char** argv)
 			{
 				// Grab its state repository, where we can inspect its data.
 				DtEntityStateRepository *esr = first->entityStateRep();
-
+				esr->setAlgorithm(c_drkDefault);
 				// Create a topographic view on the state repository, so we
 				// can look at position information in topographic coordinates.
 				double refLatitude  = DtDeg2Rad(  35.699760);

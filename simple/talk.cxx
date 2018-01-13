@@ -106,7 +106,7 @@ int main( int argc, char* argv[] )
 
 		// Hold on to the entity's state repository, where we can set data.
 		DtEntityStateRepository* esr = entityPub.entityStateRep();
-
+		esr->setAlgorithm(c_drkDefault);
 		// Create a topographic view on the state repository, so we
 		// can set position information in topographic coordinates.
 		double refLatitude  = DtDeg2Rad(   35.699760 );
