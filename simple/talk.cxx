@@ -23,6 +23,7 @@
 #include <iostream>
 
 #include "adaptation.h"
+#include "Clock.h"
 
 //end of adaptation layer
 
@@ -79,6 +80,7 @@ int main( int argc, char* argv[] )
 		// DtVrlApplicationInitializer class and should be called before
 		// creating the DtExerciseConn instance.
 		appInit.parseCmdLine();
+		appInit.setTimeStampType(DtTimeStampAbsolute);
 
 		DtExerciseConn::InitializationStatus status = DtExerciseConn::DtINIT_SUCCESS;
 
@@ -89,6 +91,7 @@ int main( int argc, char* argv[] )
 		// a network, or an RTI. After exConn is created, and if no error
 		// has occurred this simulator will be a live federate.
 		DtExerciseConn exConn(appInit, &status);
+		//DtTimeStampType t = exConn.timeStampType();
 
 		if (status != 0)
 		{
@@ -135,8 +138,10 @@ int main( int argc, char* argv[] )
 		exConn.sendStamped(fire);
 
 		// Main loop
+		CClockStaticAln sysClock;
+		sysClock.StartClock();
 		DtTime dt = 1.0/60.0; //60 hz
-		DtTime simTime = 0; //in seconds
+		DtTime simTimeO = (DtTime)sysClock.GetTickCnt()/(DtTime)1000; //in seconds
 		DWORD time_n = GetTickCount();
 		clock->init();
 
@@ -145,9 +150,10 @@ int main( int argc, char* argv[] )
 		ExternalDriverStateTran stateTran;
 		memset(&stateTran, 0, sizeof(ExternalDriverStateTran));
 
-
-		while (forever && simTime <= 600.0)
+		bool bTimeOver = false;
+		while (forever && !bTimeOver)
 		{
+			DtTime simTime = (DtTime)sysClock.GetTickCnt()/(DtTime)1000; //in seconds
 			// Tell VR-Link the current value of simulation time.
 			clock->setSimTime(simTime);
 			// Process any incoming messages.
@@ -176,10 +182,11 @@ int main( int argc, char* argv[] )
 			// Set up for next iteration.
 			position[0] += velocity[0] * dt;
 
-			simTime     += dt;
+			DtTime elapse = simTime - simTimeO;
 
 			// Wait till real time equals simulation time of next step.
-			DtSleep(simTime - clock->elapsedRealTime());
+			DtSleep(elapse + dt - clock->elapsedRealTime());
+			bTimeOver = (elapse > 600);
 		}
 	}
 	DtCATCH_AND_WARN(std::cout);

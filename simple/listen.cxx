@@ -24,6 +24,7 @@
 #include <vl/reflectedEnvironmentProcess.h>
 #include <vl/reflectedEnvironmentProcessList.h>
 #include "adaptation.h"
+#include "Clock.h"
 
 int keybrdTick(void);
 
@@ -104,6 +105,7 @@ int main(int argc, char** argv)
 		// DtVrlApplicationInitializer class and should be called before
 		// creating the DtExerciseConn instance.
 		appInit.parseCmdLine();
+		appInit.setTimeStampType(DtTimeStampAbsolute);
 
 		DtExerciseConn::InitializationStatus status = DtExerciseConn::DtINIT_SUCCESS;
 
@@ -114,6 +116,7 @@ int main(int argc, char** argv)
 		// a network, or an RTI. After exConn is created, and if no error
 		// has occurred this simulator will be a live federate.
 		DtExerciseConn exConn(appInit, &status);
+		//DtTimeStampType t = exConn.timeStampType();
 
 		if (status != 0)
 		{
@@ -139,11 +142,15 @@ int main(int argc, char** argv)
 #ifdef DtHLA
 		exConn.addRtiErrorCb(&DtRtiShutdownHandler, &forever);
 #endif
+		CClockStaticAln sysClock;
+		sysClock.StartClock();
+		clock->init();
 		DtTime dt = 1.0/60.0; //60 hz
-		DtTime simTime = 0; //in seconds
+		DtTime simTimeO = (DtTime)sysClock.GetTickCnt()/(DtTime)1000; //in seconds
 		DWORD time_n = GetTickCount();
 
-		while (forever && simTime <= 600.0)
+		bool bTimeOver = false;
+		while (forever && !bTimeOver)
 		{
 			// Check if user hit 'q' to quit.
 			if (keybrdTick() == -1)
@@ -151,6 +158,7 @@ int main(int argc, char** argv)
 
 			//simTime = clock->elapsedRealTime();
 			// Tell VR-Link the current value of simulation time.
+			DtTime simTime = (DtTime)sysClock.GetTickCnt()/(DtTime)1000; //in seconds
 			clock->setSimTime(simTime);
 
 			// Process any incoming messages.
@@ -193,9 +201,10 @@ int main(int argc, char** argv)
 				//   << topoView.location().string() << " time: " << simTime << std::endl;
 
 			}
-			simTime += dt;
+			DtTime elapse = simTime - simTimeO;
 			// Sleep till next iteration.
-			DtSleep(simTime - clock->elapsedRealTime());
+			DtSleep(elapse + dt - clock->elapsedRealTime());
+			bTimeOver = (elapse > 600);
 		}
 	}
 	DtCATCH_AND_WARN(std::cout);
