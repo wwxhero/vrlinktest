@@ -63,7 +63,7 @@ static const TVector3D c_tangent0 = {0, 0, 1};
 static const TVector3D c_lateral0 = {1, 0, 0};
 #endif
 
-static const DtDeadReckonTypes c_drkDefault = DtDrDrmRpw;
+static const DtDeadReckonTypes c_drkDefault = DtDrDrmRvw;
 struct ExternalDriverState {
 	TPoint3D          position;     /* object's position */
 	TVector3D         tangent;      /* tangent vector (normalized) */
