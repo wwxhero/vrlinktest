@@ -101,7 +101,7 @@ int main( int argc, char* argv[] )
 
 		// Create an entity publisher for the entity we are simulating.
 		DtEntityPublisher entityPub(f18Type, &exConn,
-											 DtDrDrmRvw, DtForceFriendly,
+											 c_drkDefault, DtForceFriendly,
 											 DtEntityPublisher::guiseSameAsType());
 
 		// Hold on to the entity's state repository, where we can set data.
@@ -157,10 +157,6 @@ int main( int argc, char* argv[] )
 			DWORD time_np = GetTickCount();
 			Logout(simTime, time_np - time_n, stateSim);
 			Transform(stateSim, stateTran);
-			const double omega = 0.1;
-			stateTran.ori.setPsi(0);
-			stateTran.ori.setTheta(omega * simTime);
-			stateTran.ori.setPhi(0);
 			Logout(simTime, time_np - time_n, stateTran);
 			time_n = time_np;
 
