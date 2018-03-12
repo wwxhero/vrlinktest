@@ -80,7 +80,7 @@ int main( int argc, char* argv[] )
 		// DtVrlApplicationInitializer class and should be called before
 		// creating the DtExerciseConn instance.
 		appInit.parseCmdLine();
-		appInit.setTimeStampType(DtTimeStampAbsolute);
+		appInit.setTimeStampType(DtTimeStampRelative);
 
 		DtExerciseConn::InitializationStatus status = DtExerciseConn::DtINIT_SUCCESS;
 
@@ -110,6 +110,12 @@ int main( int argc, char* argv[] )
 		// Hold on to the entity's state repository, where we can set data.
 		DtEntityStateRepository* esr = entityPub.entityStateRep();
 		esr->setAlgorithm(c_drkDefault);
+		printf("%f %f %f %f\n", 
+			esr->thresholder()->rotationThreshold(),
+			esr->thresholder()->dfltRotationThreshold(),
+			esr->thresholder()->translationThreshold(),
+			esr->thresholder()->dfltTranslationThreshold());
+
 		// Create a topographic view on the state repository, so we
 		// can set position information in topographic coordinates.
 		double refLatitude  = DtDeg2Rad(   35.699760 );
@@ -186,7 +192,7 @@ int main( int argc, char* argv[] )
 
 			// Wait till real time equals simulation time of next step.
 			DtSleep(elapse + dt - clock->elapsedRealTime());
-			bTimeOver = (elapse > 600);
+			bTimeOver = (elapse > 300);
 		}
 	}
 	DtCATCH_AND_WARN(std::cout);

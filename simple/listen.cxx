@@ -105,7 +105,7 @@ int main(int argc, char** argv)
 		// DtVrlApplicationInitializer class and should be called before
 		// creating the DtExerciseConn instance.
 		appInit.parseCmdLine();
-		appInit.setTimeStampType(DtTimeStampAbsolute);
+		appInit.setTimeStampType(DtTimeStampRelative);
 
 		DtExerciseConn::InitializationStatus status = DtExerciseConn::DtINIT_SUCCESS;
 
@@ -172,22 +172,37 @@ int main(int argc, char** argv)
 				// Grab its state repository, where we can inspect its data.
 				DtEntityStateRepository *esr = first->entityStateRep();
 				esr->setAlgorithm(c_drkDefault);
-				esr->useSmoother();
+				//esr->useSmoother();
 				// Create a topographic view on the state repository, so we
 				// can look at position information in topographic coordinates.
 				double refLatitude  = DtDeg2Rad(  35.699760);
 				double refLongitude = DtDeg2Rad(-121.326577);
 				DtTopoView topoView(esr, refLatitude, refLongitude);
 
-				ExternalDriverStateTran stateTran;
+				ExternalDriverStateTran stateTran, stateRaw, stateLast;
 
 				stateTran.vel = topoView.velocity();
 				stateTran.acc = topoView.acceleration();
 				stateTran.ori = topoView.orientation();
 				stateTran.rot = topoView.rotationalVelocity();
 				stateTran.loc = topoView.location();
+
+				stateRaw.vel = esr->velocity();
+				stateRaw.acc = esr->acceleration();
+				stateRaw.ori = esr->orientation();
+				stateRaw.rot = esr->rotationalVelocity();
+				stateRaw.loc = esr->location();
+
+				stateLast.vel = esr->lastSetVelocity();
+				stateLast.acc = esr->lastSetAcceleration();
+				stateLast.ori = esr->lastSetOrientation();
+				stateLast.rot = esr->lastSetRotationalVelocity();
+				stateLast.loc = esr->lastSetLocation();
+				
 				DWORD time_np = GetTickCount();
 				Logout(simTime, time_np - time_n, stateTran);
+				g_VrlinkLoggerRaw.Logout(simTime, time_np - time_n, stateRaw);
+				g_VrlinkLoggerLast.Logout(simTime, time_np - time_n, stateLast);
 
 				ExternalDriverState stateSim;
 				Transform(stateTran, stateSim);
@@ -204,7 +219,7 @@ int main(int argc, char** argv)
 			DtTime elapse = simTime - simTimeO;
 			// Sleep till next iteration.
 			DtSleep(elapse + dt - clock->elapsedRealTime());
-			bTimeOver = (elapse > 600);
+			bTimeOver = (elapse > 300);
 		}
 	}
 	DtCATCH_AND_WARN(std::cout);

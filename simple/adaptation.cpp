@@ -23,6 +23,8 @@ char CLogger::s_szHeaderVrLink[] = "time_exp, time_real_elapse"
 
 CLogger g_SimLogger("sim.log", CLogger::s_szHeaderSim);
 CLogger g_VrlinkLogger("vrlink.log", CLogger::s_szHeaderVrLink);
+CLogger g_VrlinkLoggerRaw("vrlinkraw.log", CLogger::s_szHeaderVrLink);
+CLogger g_VrlinkLoggerLast("vrlinklast.log", CLogger::s_szHeaderVrLink);
 
 CLogger::CLogger(const char* fileName, const char* szHeader) : m_fileName(fileName)
 {

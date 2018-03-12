@@ -59,8 +59,8 @@ typedef struct TVector3D_tag {   /* {secret} */
 static const TVector3D c_tangent0 = {0, -1, 0};
 static const TVector3D c_lateral0 = {-1, 0, 0};
 #else
-static const TVector3D c_tangent0 = {0, 0, 1};
-static const TVector3D c_lateral0 = {1, 0, 0};
+static const TVector3D c_tangent0 = { 0, 1, 0 };
+static const TVector3D c_lateral0 = { 1, 0, 0 };
 #endif
 
 static const DtDeadReckonTypes c_drkDefault = DtDrDrmRvw;
@@ -93,19 +93,19 @@ struct ExternalDriverState {
 
 inline void mockDyna(DtTime t, struct ExternalDriverState& s)
 {
-	const float scale = 5.0f;
-	const float omega = 0.1f;
+	const float scale = 5.0f; // radius of path (m)
+	const float omega = 0.1f; // angular speed (rad/sec)
 	s.position.x = scale * cos(t * omega);
-	s.position.y = 0.0f;
-	s.position.z = scale * sin(t * omega);
+	s.position.y = scale * sin(t * omega);
+	s.position.z = 0.0f;
 
 	s.tangent.i = -sin(t * omega);
-	s.tangent.j = 0.0f;
-	s.tangent.k = cos(t * omega);
+	s.tangent.j = cos(t * omega);
+	s.tangent.k = 0.0f;
 
 	s.lateral.i = cos(t * omega);
-	s.lateral.j = 0.0f;
-	s.lateral.k = sin(t * omega);
+	s.lateral.j = sin(t * omega);
+	s.lateral.k = 0.0f;
 
 	memset(s.boundBox, 0, sizeof(TPoint3D)*2); //fix me: no idea about the bbox
 
@@ -125,7 +125,45 @@ inline void mockDyna(DtTime t, struct ExternalDriverState& s)
 	//suppose in euler angle
 	s.angularVel.i = 0;
 	s.angularVel.j = 0;
-	s.angularVel.k = (2 * PI) / omega;
+	s.angularVel.k = omega;
+
+}
+
+inline void mockDyna_orig(DtTime t, struct ExternalDriverState& s)
+{
+	const float scale = 5.0f;
+	const float omega = 0.1f;
+	s.position.x = scale * cos(t * omega);
+	s.position.y = 0.0f;
+	s.position.z = scale * sin(t * omega);
+
+	s.tangent.i = -sin(t * omega);
+	s.tangent.j = 0.0f;
+	s.tangent.k = cos(t * omega);
+
+	s.lateral.i = cos(t * omega);
+	s.lateral.j = 0.0f;
+	s.lateral.k = sin(t * omega);
+
+	memset(s.boundBox, 0, sizeof(TPoint3D) * 2); //fix me: no idea about the bbox
+
+	s.vel = scale * omega;
+	s.visualState = 0; //fix me: no idea
+	s.audioState = 0; //fix me: no idea
+
+	s.acc = 0;
+	s.suspStif = 0; //fix me
+	s.suspDamp = 0;
+	s.tireStif = 0;
+	s.tireDamp = 0;
+	s.velBrake = 0;
+	memset(s.posHint, 0, 4 * sizeof(cvTerQueryHint));
+	s.dynaFidelity = 0;
+
+	//suppose in euler angle
+	s.angularVel.i = 0;
+	s.angularVel.j = 0;
+	s.angularVel.k = omega;
 
 }
 
@@ -311,6 +349,8 @@ private:
 
 extern CLogger g_SimLogger;
 extern CLogger g_VrlinkLogger;
+extern CLogger g_VrlinkLoggerRaw;
+extern CLogger g_VrlinkLoggerLast;
 
 inline void Logout(DtTime t, DWORD rtElapse, const struct ExternalDriverState& s)
 {
