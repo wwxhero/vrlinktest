@@ -124,8 +124,8 @@ inline void mockDyna(DtTime t, struct ExternalDriverState& s)
 
 	//suppose in euler angle
 	s.angularVel.i = 0;
-	s.angularVel.j = 0;
-	s.angularVel.k = (2 * PI) / omega;
+	s.angularVel.j = omega;
+	s.angularVel.k = 0;
 
 }
 
