@@ -120,12 +120,14 @@ inline void mockDyna(DtTime t, struct ExternalDriverState& s)
 	s.tireDamp = 0;
 	s.velBrake = 0;
 	memset(s.posHint, 0, 4 * sizeof(cvTerQueryHint));
+	s.latAccel = -scale * omega * omega;
 	s.dynaFidelity = 0;
 
-	//suppose in euler angle
+
+	//rotates about z (entity coordinate) with rate -omega
 	s.angularVel.i = 0;
 	s.angularVel.j = 0;
-	s.angularVel.k = omega;
+	s.angularVel.k = -omega;
 
 }
 
