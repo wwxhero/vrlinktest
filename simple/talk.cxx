@@ -56,6 +56,8 @@ int main( int argc, char* argv[] )
 		// everything else is using the protocol independent API.
 		appInit.setUseAsynchIO( true );
 		appInit.setDisVersionToSend( 7 );
+		DtThresholder::setDfltTranslationThreshold(0.01);
+		DtThresholder::setDfltRotationThreshold(0.05236);
 #else
 		appInit.setFedFileName( DtDefaultRpr2Fom );
 		appInit.setExecName( "MAK-RPR-2.0" );
@@ -110,11 +112,13 @@ int main( int argc, char* argv[] )
 		// Hold on to the entity's state repository, where we can set data.
 		DtEntityStateRepository* esr = entityPub.entityStateRep();
 		esr->setAlgorithm(c_drkDefault);
-		printf("%f %f %f %f\n", 
+		printf("%f %f %f %f\n",
 			esr->thresholder()->rotationThreshold(),
 			esr->thresholder()->dfltRotationThreshold(),
 			esr->thresholder()->translationThreshold(),
 			esr->thresholder()->dfltTranslationThreshold());
+
+
 
 		// Create a topographic view on the state repository, so we
 		// can set position information in topographic coordinates.
