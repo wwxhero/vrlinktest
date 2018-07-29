@@ -25,6 +25,7 @@
 #include "adaptation.h"
 #include "Clock.h"
 
+
 //end of adaptation layer
 
 void DtRtiShutdownHandler(const char * label, void* finished)
@@ -167,10 +168,10 @@ int main( int argc, char* argv[] )
 			time_n = time_np;
 
 			// Set the current position information.
-			topoView.setVelocity(stateTran.vel);
-			topoView.setAcceleration(stateTran.acc);
+			//topoView.setVelocity(stateTran.vel);
+			//topoView.setAcceleration(stateTran.acc);
 			topoView.setOrientation(stateTran.ori);
-			topoView.setRotationalVelocity(stateTran.rot);
+			//topoView.setRotationalVelocity(stateTran.rot);
 			topoView.setLocation(stateTran.loc);
 
 
