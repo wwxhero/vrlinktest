@@ -363,6 +363,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="Clock.h" />
     <ResourceCompile Include="../../data/vrlink.rc" />
     <ClCompile Include="adaptation.cpp" />
+    <ClCompile Include="articulate.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="listen.cxx" />
   </ItemGroup>

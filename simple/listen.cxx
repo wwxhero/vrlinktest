@@ -25,6 +25,7 @@
 #include <vl/reflectedEnvironmentProcessList.h>
 #include "adaptation.h"
 #include "Clock.h"
+#include "articulate.h"
 
 int keybrdTick(void);
 
@@ -173,6 +174,7 @@ int main(int argc, char** argv)
 				DtEntityStateRepository *esr = first->entityStateRep();
 				esr->setAlgorithm(c_drkDefault);
 				esr->useSmoother();
+				artPartsExamplePrint(esr);
 				// Create a topographic view on the state repository, so we
 				// can look at position information in topographic coordinates.
 				double refLatitude  = DtDeg2Rad(  35.699760);

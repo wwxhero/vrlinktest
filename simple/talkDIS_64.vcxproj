@@ -361,9 +361,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   <ItemGroup>
     <ClInclude Include="../../data/resource.h" />
     <ClInclude Include="adaptation.h" />
+    <ClInclude Include="articulate.h" />
     <ClInclude Include="Clock.h" />
     <ResourceCompile Include="../../data/vrlink.rc" />
     <ClCompile Include="adaptation.cpp" />
+    <ClCompile Include="articulate.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="talk.cxx" />
   </ItemGroup>

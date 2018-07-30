@@ -10,6 +10,7 @@
     <ClCompile Include="Clock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="articulate.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../../data/resource.h" />

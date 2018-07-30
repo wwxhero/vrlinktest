@@ -22,9 +22,16 @@
 
 #include <iostream>
 
+#include <vlpi/articulatedPartCollection.h>
+#include <vlpi/articulatedPart.h>
+
+// Used for DtInfo in this example
+#include <vlutil/vlPrint.h>
+
 #include "adaptation.h"
 #include "Clock.h"
 
+#include "articulate.h"
 
 //end of adaptation layer
 
@@ -111,6 +118,7 @@ int main( int argc, char* argv[] )
 		// Hold on to the entity's state repository, where we can set data.
 		DtEntityStateRepository* esr = entityPub.entityStateRep();
 		esr->setAlgorithm(c_drkDefault);
+		artPartsExampleS(esr);
 		// Create a topographic view on the state repository, so we
 		// can set position information in topographic coordinates.
 		double refLatitude  = DtDeg2Rad(   35.699760 );
